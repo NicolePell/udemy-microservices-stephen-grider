@@ -6,6 +6,13 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
+enum ServiceUrl {
+  Post = 'http://localhost:4000/events',
+  Comment = 'http://localhost:4001/events',
+  Query = 'http://localhost:4002/events',
+  Moderation = 'http://localhost:4003/events',
+}
+
 type Event = {
   id: string
   title: string
@@ -14,9 +21,10 @@ type Event = {
 app.post('/events', (req, res) => {
   const event: Event = req.body
 
-  axios.post('http://localhost:4000/events', event)
-  axios.post('http://localhost:4001/events', event)
-  axios.post('http://localhost:4002/events', event)
+  axios.post(ServiceUrl.Post, event)
+  axios.post(ServiceUrl.Comment, event)
+  axios.post(ServiceUrl.Query, event)
+  axios.post(ServiceUrl.Moderation, event)
 
   res.send({ status: 'OK' })
 })

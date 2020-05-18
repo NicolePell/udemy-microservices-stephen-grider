@@ -7,9 +7,19 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
+enum Status {
+  Pending = 'Pending',
+}
+
+enum EventType {
+  CommentUpdated = 'CommentUpdated',
+  CommentModerated = 'CommentModerated',
+}
+
 type Comment = {
   id: string
   content: string
+  status: Status
 }
 
 type CommentsForPost = {
@@ -33,15 +43,37 @@ app.post('/posts/:id/comments', async (req, res) => {
   res.status(201).send(commentsForPost[req.params.id])
 })
 
-app.post('/events', (req, res) => {
-  console.log('Received event', req.body)
+app.post('/events', async (req, res) => {
+  console.log('Event', req.body.type)
+  const { type, data } = req.body
+
+  if (type === EventType.CommentModerated) {
+    const { postId, id, status, content } = data
+
+    const comments = commentsForPost[postId]
+
+    const comment = comments.find((comment) => {
+      return comment.id === id
+    })
+    comment ? (comment.status = status) : console.log('NO COMMENT FOUND', data)
+
+    await axios.post('http://localhost:4005/events', {
+      type: EventType.CommentUpdated,
+      data: {
+        id,
+        postId,
+        status,
+        content,
+      },
+    })
+  }
 
   res.send({})
 })
 
 const createComment = (postId: string, commentId: string, content: string) => {
   const comments = commentsForPost[postId] || []
-  comments.push({ id: commentId, content })
+  comments.push({ id: commentId, content, status: Status.Pending })
 
   return (commentsForPost[postId] = comments)
 }

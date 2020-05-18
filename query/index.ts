@@ -5,9 +5,14 @@ const app = express()
 app.use(express.json())
 app.use(cors())
 
+enum Status {
+  Pending = 'Pending',
+}
+
 type Comment = {
   id: string
   content: string
+  status: Status
 }
 
 type Post = {
@@ -23,6 +28,7 @@ type Posts = {
 enum EventType {
   PostCreated = 'PostCreated',
   CommentCreated = 'CommentCreated',
+  CommentUpdated = 'CommentUpdated',
 }
 
 const posts: Posts = {}
@@ -41,10 +47,21 @@ app.post('/events', (req, res) => {
   }
 
   if (type === EventType.CommentCreated) {
-    const { id, content, postId } = data
+    const { id, content, postId, status } = data
 
     const post: Post = posts[postId]
-    post.comments.push({ id, content })
+    post.comments.push({ id, content, status })
+  }
+
+  if (type === EventType.CommentUpdated) {
+    const { id, postId, status, content } = data
+
+    const post: Post = posts[postId]
+    const comment = post.comments.find((comment) => {
+      return comment.id === id
+    })
+    comment!.status = status
+    comment!.content = content
   }
 
   res.status(201).send({ status: 'OK' })
