@@ -18,8 +18,12 @@ type Event = {
   title: string
 }
 
+const events: Event[] = []
+
 app.post('/events', (req, res) => {
   const event: Event = req.body
+
+  events.push(event)
 
   axios.post(ServiceUrl.Post, event)
   axios.post(ServiceUrl.Comment, event)
@@ -27,6 +31,10 @@ app.post('/events', (req, res) => {
   axios.post(ServiceUrl.Moderation, event)
 
   res.send({ status: 'OK' })
+})
+
+app.get('/events', (req, res) => {
+  res.send(events)
 })
 
 app.listen(4005, () => {
