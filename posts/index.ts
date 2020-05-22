@@ -19,6 +19,7 @@ type Posts = {
 const posts: Posts = {}
 
 app.get('/posts', (req, res) => {
+  console.log(`You've hit the posts endpoint!`)
   res.send(posts)
 })
 
@@ -42,7 +43,7 @@ app.post('/events', (req, res) => {
   res.send({})
 })
 
-app.listen(4000, () => {
-  console.log('**** VERSION 3 ****')
+app.listen(4000, '0.0.0.0', () => {
+  console.log('**** VERSION 7 ****')
   console.log('Post service listening on 4000')
 })

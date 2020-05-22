@@ -15,3 +15,5 @@ spec:
       containers:
         - name: posts
           image: nicolepell/posts:latest
+          ports:
+            - containerPort: 4000
