@@ -43,5 +43,6 @@ app.post('/events', (req, res) => {
 })
 
 app.listen(4000, () => {
+  console.log('**** VERSION 2 ****')
   console.log('Post service listening on 4000')
 })
